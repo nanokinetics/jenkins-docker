@@ -1,2 +1,0 @@
-#Wed Oct 14 11:07:48 CDT 2015
-constructor=image,tag,fallbackTag,name,labels,command,commandArguments,cidFilePath,environmentFiles,environmentVariables,user,hostName,macAddress,networkMode,hostMappings,dnsServers,dnsSearchServers,exposedPorts,publishPorts,workingDirectory,volumeDriver,mountVolumes,links,cpuConstraint,memoryNodeConstraint,memoryLimit,memorySwap,cpuShares,cpuPeriod,cpuQuota,removeRunningContainers,remove,pseudoTTY,privileged,detach,readOnly,disableContentTrust,publishAllPorts,removeIntermediateContainers
