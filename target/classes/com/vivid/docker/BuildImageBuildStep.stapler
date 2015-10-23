@@ -1,0 +1,2 @@
+#Wed Oct 14 11:07:48 CDT 2015
+constructor=name,tag,dockerFile,dockerFileContent,cpuConstraint,memoryNodeConstraint,memoryLimit,memorySwap,cpuShares,cpuPeriod,cpuQuota,noCache,pull,disableContentTrust,forceRemoveIntermediateContainers,removeIntermediateContainers

@@ -1,0 +1,75 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+
+  <f:entry title="Image Name" field="name">
+      <f:textbox />
+  </f:entry>
+
+  <f:entry title="Tag" field="tag">
+    <f:textbox />
+  </f:entry>
+
+  <f:entry title="Dockerfile Path" field="dockerFile">
+    <f:textbox />
+  </f:entry>
+
+  <f:block>
+    <table style="width:100%">
+      <f:optionalBlock title="Specify Dockerfile Contents">
+        <f:entry title="Contents" field="dockerFileContents">
+          <f:textarea class="setting-input fixed-width" />
+        </f:entry>
+      </f:optionalBlock>
+    </table>
+  </f:block>
+
+  <f:advanced>
+    <f:section title="Build configuration">
+      <f:entry title="Disable Cache" field="noCache">
+        <div>
+          <f:checkbox />
+        </div>
+      </f:entry>
+      <f:entry title="Pull before building" field="pull">
+        <f:checkbox />
+      </f:entry>
+      <f:entry title="Skip image verification" field="disableContentTrust">
+        <f:checkbox />
+      </f:entry>
+      <f:entry title="Remove Intermediate Containers" field="forceRemoveIntermediateContainers">
+        <f:checkbox />
+      </f:entry>
+      <f:entry title="Force Removal of Intermediate Containers" field="removeIntermediateContainers">
+        <f:checkbox />
+      </f:entry>
+    </f:section>
+
+    <f:section title="CPU Settings">
+      <f:entry title="CPU Shares" field="cpuShares">
+        <f:textbox />
+      </f:entry>
+      <f:entry title="CPU Period" field="cpuPeriod">
+        <f:textbox />
+      </f:entry>
+      <f:entry title="CPU Quota" field="cpuQuota">
+        <f:textbox />
+      </f:entry>
+      <f:entry title="Constrain to CPUs" field="cpuConstraint">
+        <f:textbox />
+      </f:entry>
+    </f:section>
+
+
+    <f:section title="Memory Settings">
+      <f:entry title="Constrain to Memory Nodes" field="memoryNodeConstraint">
+        <f:textbox />
+      </f:entry>
+      <f:entry title="Memory Limit" field="memoryLimit">
+        <f:textbox />
+      </f:entry>
+      <f:entry title="Total Memory Limit (memory + swap space)" field="memorySwap">
+        <f:textbox />
+      </f:entry>
+    </f:section>
+  </f:advanced>
+</j:jelly>
