@@ -171,12 +171,15 @@ public class RunImageBuildStep extends DockerBuildStep {
                     launcher.getListener().getLogger().append("Using \"" + fallbackImageTag + "\" as the fallback tag.\n");
                     imageTag = fallbackImageTag;
                 }
+            } else {
+                launcher.getListener().getLogger().printf("Image [%s:%s] found.\n", imageName, imageTag);
             }
 
             if (removeRunningContainers) {
                 attemptRemovalOfExistingContainers(containerName, cidFile, launcher, environment);
             }
 
+            launcher.getListener().getLogger().printf("Attempting to launch image [%s:%s]\n", imageName, imageTag);
             RunCommandArgumentBuilder arguments = new RunCommandArgumentBuilder()
                     .image(imageName + ":" + imageTag)
                     .name(containerName)
@@ -282,7 +285,7 @@ public class RunImageBuildStep extends DockerBuildStep {
             consoleOutput = new PipedOutputStream(pipedInputStream);
 
             int result = launcher.launch()
-                    .cmdAsSingleString(getDockerConfigurationDescriptor().getDockerBinary() + " ps -a --filter=name=" + containerName + " --format={{.ID}}")
+                    .cmdAsSingleString(getDockerConfigurationDescriptor().getDockerBinary() + " ps -a --filter=\"name=^/" + containerName + "$\" --format={{.ID}}")
                     .stdout(consoleOutput)
                     .envs(envVars)
                     .quiet(true)
@@ -316,7 +319,7 @@ public class RunImageBuildStep extends DockerBuildStep {
 
     private boolean imageExists(String imageName, String tag, Launcher launcher, EnvVars envVars) {
         try {
-
+            launcher.getListener().getLogger().printf("Checking if image exists [%s:%s]...\n", imageName, tag);
             int result = launcher.launch()
                     .cmdAsSingleString(getDockerConfigurationDescriptor().getDockerBinary() + " history " + imageName + ":" + tag)
                     .quiet(true)
@@ -325,6 +328,7 @@ public class RunImageBuildStep extends DockerBuildStep {
 
             if(result != SUCCESS) {
                 //Not found locally, attempt to pull it from docker hub
+                launcher.getListener().getLogger().printf("Image [%s:%s] does not exist locally. Attempting to pull image\n", imageName, tag);
                 result = launcher.launch()
                         .cmdAsSingleString(getDockerConfigurationDescriptor().getDockerBinary() + " pull " + imageName + ":" + tag)
                         .quiet(true)
