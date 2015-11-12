@@ -21,6 +21,8 @@ import java.io.*;
 
 public class RunImageBuildStep extends DockerBuildStep {
 
+    private static final int MAX_PULL_RETRIES = 5;
+
     private final String image;
     private final String tag;
     private final String fallbackTag;
@@ -329,11 +331,7 @@ public class RunImageBuildStep extends DockerBuildStep {
             if(result != SUCCESS) {
                 //Not found locally, attempt to pull it from docker hub
                 launcher.getListener().getLogger().printf("Image [%s:%s] does not exist locally. Attempting to pull image\n", imageName, tag);
-                result = launcher.launch()
-                        .cmdAsSingleString(getDockerConfigurationDescriptor().getDockerBinary() + " pull " + imageName + ":" + tag)
-                        .quiet(true)
-                        .envs(envVars)
-                        .join();
+                return pullImage(imageName, tag, launcher, envVars);
             }
 
             return result == SUCCESS;
@@ -344,6 +342,40 @@ public class RunImageBuildStep extends DockerBuildStep {
             e.printStackTrace();
         }
         return false;
+    }
+
+    private boolean pullImage(String imageName, String tag, Launcher launcher, EnvVars envVars) throws InterruptedException, IOException {
+        int result, attempt = 0;
+        boolean pullAlreadyInProgress;
+        ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+        ByteArrayOutputStream stderr = new ByteArrayOutputStream();
+        String command = String.format("%s pull %s:%s", getDockerConfigurationDescriptor().getDockerBinary(), imageName, tag);
+
+         do {
+            attempt++;
+            result = launcher.launch()
+                    .cmdAsSingleString(command)
+                    .quiet(true)
+                    .stdout(stdout)
+                    .stderr(stderr)
+                    .envs(envVars)
+                    .join();
+
+            String output = stdout.toString() + stderr.toString();
+            pullAlreadyInProgress = output.contains("already being pulled by another client");
+
+            if (pullAlreadyInProgress) {
+                if (attempt < MAX_PULL_RETRIES) {
+                    launcher.getListener().getLogger().printf("Could not pull image [%s:%s] - another pull in progress. Retrying in 10s...\n", imageName, tag);
+                    Thread.sleep(10000);
+                } else {
+                    launcher.getListener().getLogger().printf("Could not pull image [%s:%s] - another pull in progress. Aborting.\n", imageName, tag);
+                }
+                stdout.reset();
+                stderr.reset();
+            }
+        } while (pullAlreadyInProgress && attempt < MAX_PULL_RETRIES);
+        return result == SUCCESS;
     }
 
     public String getImage() {
