@@ -21,6 +21,8 @@ import java.io.*;
 
 public class RunImageBuildStep extends DockerBuildStep {
 
+    private static final int MAX_PULL_RETRIES = 5;
+
     private final String image;
     private final String tag;
     private final String fallbackTag;
@@ -171,12 +173,15 @@ public class RunImageBuildStep extends DockerBuildStep {
                     launcher.getListener().getLogger().append("Using \"" + fallbackImageTag + "\" as the fallback tag.\n");
                     imageTag = fallbackImageTag;
                 }
+            } else {
+                launcher.getListener().getLogger().printf("Image [%s:%s] found.\n", imageName, imageTag);
             }
 
             if (removeRunningContainers) {
                 attemptRemovalOfExistingContainers(containerName, cidFile, launcher, environment);
             }
 
+            launcher.getListener().getLogger().printf("Attempting to launch image [%s:%s]\n", imageName, imageTag);
             RunCommandArgumentBuilder arguments = new RunCommandArgumentBuilder()
                     .image(imageName + ":" + imageTag)
                     .name(containerName)
@@ -282,7 +287,7 @@ public class RunImageBuildStep extends DockerBuildStep {
             consoleOutput = new PipedOutputStream(pipedInputStream);
 
             int result = launcher.launch()
-                    .cmdAsSingleString(getDockerConfigurationDescriptor().getDockerBinary() + " ps -a --filter=name=" + containerName + " --format={{.ID}}")
+                    .cmdAsSingleString(getDockerConfigurationDescriptor().getDockerBinary() + " ps -a --filter=\"name=^/" + containerName + "$\" --format={{.ID}}")
                     .stdout(consoleOutput)
                     .envs(envVars)
                     .quiet(true)
@@ -316,7 +321,7 @@ public class RunImageBuildStep extends DockerBuildStep {
 
     private boolean imageExists(String imageName, String tag, Launcher launcher, EnvVars envVars) {
         try {
-
+            launcher.getListener().getLogger().printf("Checking if image exists [%s:%s]...\n", imageName, tag);
             int result = launcher.launch()
                     .cmdAsSingleString(getDockerConfigurationDescriptor().getDockerBinary() + " history " + imageName + ":" + tag)
                     .quiet(true)
@@ -325,11 +330,8 @@ public class RunImageBuildStep extends DockerBuildStep {
 
             if(result != SUCCESS) {
                 //Not found locally, attempt to pull it from docker hub
-                result = launcher.launch()
-                        .cmdAsSingleString(getDockerConfigurationDescriptor().getDockerBinary() + " pull " + imageName + ":" + tag)
-                        .quiet(true)
-                        .envs(envVars)
-                        .join();
+                launcher.getListener().getLogger().printf("Image [%s:%s] does not exist locally. Attempting to pull image\n", imageName, tag);
+                return pullImage(imageName, tag, launcher, envVars);
             }
 
             return result == SUCCESS;
@@ -340,6 +342,40 @@ public class RunImageBuildStep extends DockerBuildStep {
             e.printStackTrace();
         }
         return false;
+    }
+
+    private boolean pullImage(String imageName, String tag, Launcher launcher, EnvVars envVars) throws InterruptedException, IOException {
+        int result, attempt = 0;
+        boolean pullAlreadyInProgress;
+        ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+        ByteArrayOutputStream stderr = new ByteArrayOutputStream();
+        String command = String.format("%s pull %s:%s", getDockerConfigurationDescriptor().getDockerBinary(), imageName, tag);
+
+         do {
+            attempt++;
+            result = launcher.launch()
+                    .cmdAsSingleString(command)
+                    .quiet(true)
+                    .stdout(stdout)
+                    .stderr(stderr)
+                    .envs(envVars)
+                    .join();
+
+            String output = stdout.toString() + stderr.toString();
+            pullAlreadyInProgress = output.contains("already being pulled by another client");
+
+            if (pullAlreadyInProgress) {
+                if (attempt < MAX_PULL_RETRIES) {
+                    launcher.getListener().getLogger().printf("Could not pull image [%s:%s] - another pull in progress. Retrying in 10s...\n", imageName, tag);
+                    Thread.sleep(10000);
+                } else {
+                    launcher.getListener().getLogger().printf("Could not pull image [%s:%s] - another pull in progress. Aborting.\n", imageName, tag);
+                }
+                stdout.reset();
+                stderr.reset();
+            }
+        } while (pullAlreadyInProgress && attempt < MAX_PULL_RETRIES);
+        return result == SUCCESS;
     }
 
     public String getImage() {
