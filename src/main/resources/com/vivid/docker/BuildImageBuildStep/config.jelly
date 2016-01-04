@@ -13,6 +13,10 @@
     <f:textbox />
   </f:entry>
 
+  <f:entry title="Build Context (Path or URL. Default: &quot;.&quot;)" field="buildContext">
+      <f:textbox />
+  </f:entry>
+
   <f:block>
      <table style="width:100%">
           <f:optionalBlock name="dockerFileContentChecked" checked="${instance.dockerFileContentChecked}" inline="true" title="Specify DockerFile Contents">

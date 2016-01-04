@@ -32,7 +32,7 @@ public class BuildImageBuildStep extends DockerBuildStep {
     private final boolean forceRemoveIntermediateContainers;
     private final boolean removeIntermediateContainers;
     private final boolean dockerFileContentChecked;
-
+    private final String buildContext;
 
     @DataBoundConstructor
     public BuildImageBuildStep(String name,
@@ -52,7 +52,8 @@ public class BuildImageBuildStep extends DockerBuildStep {
                                boolean disableContentTrust,
                                boolean forceRemoveIntermediateContainers,
                                boolean removeIntermediateContainers,
-                               boolean dockerFileContentChecked) {
+                               boolean dockerFileContentChecked,
+                               String buildContext) {
         super(alternativeDockerHost);
         this.name = name;
         this.tag = tag;
@@ -71,6 +72,7 @@ public class BuildImageBuildStep extends DockerBuildStep {
         this.disableContentTrust = disableContentTrust;
         this.forceRemoveIntermediateContainers = forceRemoveIntermediateContainers;
         this.removeIntermediateContainers = removeIntermediateContainers;
+        this.buildContext = buildContext;
     }
 
     @Override
@@ -101,7 +103,8 @@ public class BuildImageBuildStep extends DockerBuildStep {
                     .noCache(noCache)
                     .pull(pull)
                     .remove(removeIntermediateContainers)
-                    .tag((FieldUtil.getMacroReplacedFieldValue(name, environment) + ":" + FieldUtil.getMacroReplacedFieldValue(tag, environment)).toLowerCase());
+                    .tag((FieldUtil.getMacroReplacedFieldValue(name, environment) + ":" + FieldUtil.getMacroReplacedFieldValue(tag, environment)).toLowerCase())
+                    .buildContext(buildContext);
 
             DockerCommandExecutor command = getCommand(arguments, environment);
             return command.execute(build, launcher, listener);
