@@ -134,9 +134,7 @@ public class RunImageBuildStep extends DockerBuildStep {
         this.memoryNodeConstraint = memoryNodeConstraint;
         this.memoryLimit = memoryLimit;
         this.memorySwap = memorySwap;
-        this.cpuShares = (Integer) Util.tryParseNumber(cpuShares, null);
-        this.cpuPeriod = (Integer) Util.tryParseNumber(cpuPeriod, null);
-        this.cpuQuota = (Integer) Util.tryParseNumber(cpuQuota, null);
+
         this.detach = detach;
         this.pseudoTTY = pseudoTTY;
         this.remove = remove;
@@ -144,6 +142,25 @@ public class RunImageBuildStep extends DockerBuildStep {
         this.readOnly = readOnly;
         this.disableContentTrust = disableContentTrust;
         this.removeIntermediateContainers = removeIntermediateContainers;
+
+        Number n;
+        if ((n = Util.tryParseNumber(cpuShares, null)) != null) {
+            this.cpuShares = n.intValue();
+        } else {
+            this.cpuShares = null;
+        }
+
+        if ((n = Util.tryParseNumber(cpuPeriod, null)) != null) {
+            this.cpuPeriod = n.intValue();
+        } else {
+            this.cpuPeriod = null;
+        }
+
+        if ((n = Util.tryParseNumber(cpuQuota, null)) != null) {
+            this.cpuQuota = n.intValue();
+        } else {
+            this.cpuQuota = null;
+        }
 
     }
 

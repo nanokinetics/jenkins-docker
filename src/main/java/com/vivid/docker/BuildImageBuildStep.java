@@ -194,5 +194,7 @@ public class BuildImageBuildStep extends DockerBuildStep {
     public boolean isRemoveIntermediateContainers() {
         return removeIntermediateContainers;
     }
+
+    public String getBuildContext() { return buildContext; }
 }
 
