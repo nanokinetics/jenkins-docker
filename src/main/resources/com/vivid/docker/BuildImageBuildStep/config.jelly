@@ -14,12 +14,12 @@
   </f:entry>
 
   <f:block>
-    <table style="width:100%">
-      <f:optionalBlock title="Specify Dockerfile Contents">
-        <f:entry title="Contents" field="dockerFileContents">
-          <f:textarea class="setting-input fixed-width" />
-        </f:entry>
-      </f:optionalBlock>
+     <table style="width:100%">
+          <f:optionalBlock name="dockerFileContentChecked" checked="${instance.dockerFileContentChecked}" inline="true" title="Specify DockerFile Contents">
+            <f:entry title="Contents" field="dockerFileContent">
+                <f:textarea class="setting-input fixed-width" />
+            </f:entry>
+          </f:optionalBlock>
     </table>
   </f:block>
 

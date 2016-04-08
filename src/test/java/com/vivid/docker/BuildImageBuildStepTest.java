@@ -104,7 +104,7 @@ public class BuildImageBuildStepTest {
 
 
     private BuildImageBuildStep constructDefault(String imageName, String tag) {
-        return new BuildImageBuildStep(imageName, tag, null, null, null, null, null, null, null, null, null, false, false, false, false, false);
+        return new BuildImageBuildStep(imageName, tag, null, null, null, null, null, null, null, null, null, false, false, false, false, false, false);
     }
 
     @Test

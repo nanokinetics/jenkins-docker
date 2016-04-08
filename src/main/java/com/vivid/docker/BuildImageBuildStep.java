@@ -11,10 +11,11 @@ import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import org.kohsuke.stapler.DataBoundConstructor;
 
+import java.io.*;
+
 public class BuildImageBuildStep extends DockerBuildStep {
 
     private final String dockerFile;
-    private final String dockerFileContent;
     private final String name;
     private final String tag;
     private final Integer cpuShares;
@@ -24,17 +25,19 @@ public class BuildImageBuildStep extends DockerBuildStep {
     private final String memoryNodeConstraint;
     private final String memoryLimit;
     private final String memorySwap;
+    private final String dockerFileContent;
     private final boolean noCache;
     private final boolean pull;
     private final boolean disableContentTrust;
     private final boolean forceRemoveIntermediateContainers;
     private final boolean removeIntermediateContainers;
+    private final boolean dockerFileContentChecked;
+
 
     @DataBoundConstructor
     public BuildImageBuildStep(String name,
                                String tag,
                                String dockerFile,
-                               String dockerFileContent,
                                String cpuConstraint,
                                String memoryNodeConstraint,
                                String memoryLimit,
@@ -42,15 +45,16 @@ public class BuildImageBuildStep extends DockerBuildStep {
                                String cpuShares,
                                String cpuPeriod,
                                String cpuQuota,
+                               String dockerFileContent,
                                boolean noCache,
                                boolean pull,
                                boolean disableContentTrust,
                                boolean forceRemoveIntermediateContainers,
-                               boolean removeIntermediateContainers) {
+                               boolean removeIntermediateContainers,
+                               boolean dockerFileContentChecked) {
         this.name = name;
         this.tag = tag;
         this.dockerFile = dockerFile;
-        this.dockerFileContent = dockerFileContent;
         this.cpuConstraint = cpuConstraint;
         this.memoryNodeConstraint = memoryNodeConstraint;
         this.memoryLimit = memoryLimit;
@@ -58,6 +62,8 @@ public class BuildImageBuildStep extends DockerBuildStep {
         this.cpuShares = (Integer) Util.tryParseNumber(cpuShares, null);
         this.cpuPeriod = (Integer) Util.tryParseNumber(cpuPeriod, null);
         this.cpuQuota = (Integer) Util.tryParseNumber(cpuQuota, null);
+        this.dockerFileContent = dockerFileContent;
+        this.dockerFileContentChecked = dockerFileContentChecked;
         this.noCache = noCache;
         this.pull = pull;
         this.disableContentTrust = disableContentTrust;
@@ -69,13 +75,23 @@ public class BuildImageBuildStep extends DockerBuildStep {
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
         try {
             EnvVars environment = getEnvironment(build, listener);
+            String dockerFilePath = dockerFile;
+
+            if (dockerFileContent != null && !dockerFileContent.isEmpty()) {
+                dockerFilePath = environment.get("WORKSPACE") + "/Dockerfile.tmp";
+
+                launcher.getListener().getLogger().println("Creating Docker File : " + dockerFilePath);
+                launcher.getListener().getLogger().println("Content: " + dockerFileContent);
+                createDockerFile(dockerFilePath);
+            }
+
             BuildCommandArgumentBuilder arguments = new BuildCommandArgumentBuilder()
                     .disbaleContentTrust(disableContentTrust)
                     .cpuPeriod(cpuPeriod)
                     .cpuQuota(cpuQuota)
                     .cpus(cpuConstraint)
                     .cpuShares(cpuShares)
-                    .file(FieldUtil.getMacroReplacedFieldValue(dockerFile, environment))
+                    .file(FieldUtil.getMacroReplacedFieldValue(dockerFilePath, environment))
                     .forceRemove(forceRemoveIntermediateContainers)
                     .memoryLimit(memoryLimit)
                     .memorySwap(memorySwap)
@@ -94,12 +110,20 @@ public class BuildImageBuildStep extends DockerBuildStep {
         }
     }
 
-    public String getDockerFile() {
-        return dockerFile;
+    private void createDockerFile(String path) {
+        try(FileOutputStream fileOutputStream = new FileOutputStream(new File(path));
+            PrintWriter printWriter = new PrintWriter(fileOutputStream)) {
+
+            printWriter.write(dockerFileContent);
+            printWriter.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public String getDockerFileContent() {
-        return dockerFileContent;
+    public String getDockerFile() {
+        return dockerFile;
     }
 
     public String getTag() {
@@ -136,6 +160,14 @@ public class BuildImageBuildStep extends DockerBuildStep {
 
     public String getMemorySwap() {
         return memorySwap;
+    }
+
+    public String getDockerFileContent() {
+        return dockerFileContent;
+    }
+
+    public boolean isDockerFileContentChecked() {
+        return dockerFileContentChecked;
     }
 
     public boolean isNoCache() {
