@@ -2,11 +2,14 @@ package com.vivid.docker.argument;
 
 import hudson.util.ArgumentListBuilder;
 
+import java.io.File;
+
 /**
  * Created by Phil Madden on 9/10/15.
  */
 public class BuildCommandArgumentBuilder extends ImageArgumentBuilder<BuildCommandArgumentBuilder> {
     protected boolean hasSpecifiedFile = false;
+    private String buildContext;
 
     public BuildCommandArgumentBuilder() {
         super("build");
@@ -15,6 +18,8 @@ public class BuildCommandArgumentBuilder extends ImageArgumentBuilder<BuildComma
     public final ArgumentListBuilder build() {
         if(!hasSpecifiedFile) {
             argumentListBuilder.add(".");
+        } else {
+            argumentListBuilder.add(buildContext);
         }
         return argumentListBuilder;
     }
@@ -28,6 +33,7 @@ public class BuildCommandArgumentBuilder extends ImageArgumentBuilder<BuildComma
 
     public final BuildCommandArgumentBuilder file(String file) {
         if(file != null && !file.isEmpty()) {
+            buildContext = new File(file).getParent();
             argumentListBuilder.addKeyValuePair("--", "file", wrapInQuotes(file), false);
             hasSpecifiedFile = true;
         }

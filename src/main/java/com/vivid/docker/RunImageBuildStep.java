@@ -94,6 +94,7 @@ public class RunImageBuildStep extends DockerBuildStep {
                              String cpuShares,
                              String cpuPeriod,
                              String cpuQuota,
+                             String alternativeDockerHost,
                              boolean removeRunningContainers,
                              boolean remove,
                              boolean pseudoTTY,
@@ -103,6 +104,7 @@ public class RunImageBuildStep extends DockerBuildStep {
                              boolean disableContentTrust,
                              boolean publishAllPorts,
                              boolean removeIntermediateContainers) {
+        super(alternativeDockerHost);
         this.image = image;
         this.tag = tag;
         this.fallbackTag = fallbackTag;

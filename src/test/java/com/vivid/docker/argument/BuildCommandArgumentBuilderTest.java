@@ -57,7 +57,6 @@ public class BuildCommandArgumentBuilderTest {
     public void testDockerFileSpecified() {
         buildCommandArgumentBuilder.file(DOCKER_FILE_PATH);
         List<String> arguments = buildCommandArgumentBuilder.build().toList();
-        assertThat(arguments.get(arguments.size() - 1), is(not(equalTo("."))));
         assertThat(arguments, hasItem("--file=\"" + DOCKER_FILE_PATH + "\""));
     }
 

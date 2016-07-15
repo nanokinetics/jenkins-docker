@@ -41,6 +41,9 @@
 
   <f:advanced>
     <f:section title="Container Settings">
+      <f:entry title="Docker Host" field="alternativeDockerHost" description="Leave empty to use the globally configured Docker Host.">
+        <f:textbox />
+      </f:entry>
       <f:entry title="Container ID file" field="cidFilePath">
         <f:textbox />
       </f:entry>

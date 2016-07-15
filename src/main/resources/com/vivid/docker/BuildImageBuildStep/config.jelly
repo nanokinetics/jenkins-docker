@@ -25,6 +25,9 @@
 
   <f:advanced>
     <f:section title="Build configuration">
+      <f:entry title="Docker Host" field="alternativeDockerHost" description="Leave empty to use the globally configured Docker Host.">
+        <f:textbox />
+      </f:entry>
       <f:entry title="Disable Cache" field="noCache">
         <div>
           <f:checkbox />

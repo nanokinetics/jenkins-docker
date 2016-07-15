@@ -46,12 +46,14 @@ public class BuildImageBuildStep extends DockerBuildStep {
                                String cpuPeriod,
                                String cpuQuota,
                                String dockerFileContent,
+                               String alternativeDockerHost,
                                boolean noCache,
                                boolean pull,
                                boolean disableContentTrust,
                                boolean forceRemoveIntermediateContainers,
                                boolean removeIntermediateContainers,
                                boolean dockerFileContentChecked) {
+        super(alternativeDockerHost);
         this.name = name;
         this.tag = tag;
         this.dockerFile = dockerFile;
@@ -78,7 +80,7 @@ public class BuildImageBuildStep extends DockerBuildStep {
             String dockerFilePath = dockerFile;
 
             if (dockerFileContent != null && !dockerFileContent.isEmpty()) {
-                dockerFilePath = environment.get("WORKSPACE") + "/Dockerfile.tmp";
+                dockerFilePath = environment.get("WORKSPACE") + "/Dockerfile";
 
                 launcher.getListener().getLogger().println("Creating Docker File : " + dockerFilePath);
                 launcher.getListener().getLogger().println("Content: " + dockerFileContent);
