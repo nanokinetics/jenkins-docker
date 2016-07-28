@@ -58,6 +58,7 @@ public class BuildCommandArgumentBuilderTest {
         buildCommandArgumentBuilder.file(DOCKER_FILE_PATH);
         List<String> arguments = buildCommandArgumentBuilder.build().toList();
         assertThat(arguments, hasItem("--file=\"" + DOCKER_FILE_PATH + "\""));
+        assertThat(arguments.get(arguments.size() - 1), equalTo("."));
     }
 
     @Test
@@ -118,5 +119,27 @@ public class BuildCommandArgumentBuilderTest {
     public void testRemoveIntermediateContainersSpecified_false() {
         buildCommandArgumentBuilder.remove(false);
         assertThat(buildCommandArgumentBuilder.build().toList(), not(hasItem("--rm")));
+    }
+
+    @Test
+    public void testBuildContextNotSpecified() {
+        List<String> arguments = buildCommandArgumentBuilder.build().toList();
+        assertThat(arguments.get(arguments.size() - 1), equalTo("."));
+    }
+
+    @Test
+    public void testBuildContextSpecified() {
+        buildCommandArgumentBuilder.buildContext("/foo");
+        List<String> arguments = buildCommandArgumentBuilder.build().toList();
+        assertThat(arguments.get(arguments.size() - 1), equalTo("/foo"));
+    }
+
+    @Test
+    public void testBuildContextAndDockerFileSpecified() {
+        buildCommandArgumentBuilder.file(DOCKER_FILE_PATH);
+        buildCommandArgumentBuilder.buildContext("/foo");
+        List<String> arguments = buildCommandArgumentBuilder.build().toList();
+        assertThat(arguments, hasItem("--file=\"" + DOCKER_FILE_PATH + "\""));
+        assertThat(arguments.get(arguments.size() - 1), equalTo("/foo"));
     }
 }

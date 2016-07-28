@@ -9,6 +9,7 @@ import java.io.File;
  */
 public class BuildCommandArgumentBuilder extends ImageArgumentBuilder<BuildCommandArgumentBuilder> {
     protected boolean hasSpecifiedFile = false;
+    protected boolean hasBuildContext = false;
     private String buildContext;
 
     public BuildCommandArgumentBuilder() {
@@ -16,7 +17,7 @@ public class BuildCommandArgumentBuilder extends ImageArgumentBuilder<BuildComma
     }
 
     public final ArgumentListBuilder build() {
-        if(!hasSpecifiedFile) {
+        if(!hasBuildContext) {
             argumentListBuilder.add(".");
         } else {
             argumentListBuilder.add(buildContext);
@@ -71,6 +72,14 @@ public class BuildCommandArgumentBuilder extends ImageArgumentBuilder<BuildComma
     public final BuildCommandArgumentBuilder pull(boolean value) {
         if(value) {
             argumentListBuilder.add("--pull");
+        }
+        return this;
+    }
+
+    public final BuildCommandArgumentBuilder buildContext(String buildContext) {
+        if (buildContext != null && !buildContext.isEmpty()) {
+            this.buildContext = buildContext;
+            hasBuildContext = true;
         }
         return this;
     }
