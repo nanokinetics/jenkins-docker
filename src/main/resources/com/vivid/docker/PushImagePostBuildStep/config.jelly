@@ -18,6 +18,9 @@
 
   <f:advanced>
     <f:section title="Advanced push settings">
+      <f:entry title="Docker Host" field="alternativeDockerHost" description="Leave empty to use the globally configured Docker Host.">
+        <f:textbox />
+      </f:entry>
       <f:entry title="Fail on error" field="fail" description="Fail the build if the image cannot be pushed">
         <f:checkbox />
       </f:entry>

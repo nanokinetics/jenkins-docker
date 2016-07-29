@@ -29,8 +29,10 @@ public class RemoveContainerPostBuildStep extends DockerPostBuildStep {
     public RemoveContainerPostBuildStep(String id,
                                         String name,
                                         String cidFilePath,
+                                        String alternativeDockerHost,
                                         boolean force,
                                         boolean fail) {
+        super(alternativeDockerHost);
         this.id = id;
         this.name = name;
         this.cidFilePath = cidFilePath;
