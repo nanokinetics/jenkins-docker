@@ -20,8 +20,10 @@ public class PushImagePostBuildStep extends DockerPostBuildStep {
     public PushImagePostBuildStep(String image,
                                   String tag,
                                   String buildTrigger,
+                                  String alternativeDockerHost,
                                   boolean disableContentTrust,
                                   boolean fail) {
+        super(alternativeDockerHost);
         this.image = image;
         this.tag = tag;
         this.disableContentTrust = disableContentTrust;
