@@ -9,15 +9,24 @@
       <f:textbox default="latest" />
   </f:entry>
 
+  <f:entry name="buildTrigger" title="Trigger When" field="buildTrigger">
+      <select name="buildTrigger">
+          <option value="SUCCESS">Success</option>
+          <option value="FAILURE">Failure</option>
+      </select>
+  </f:entry>
+
   <f:advanced>
     <f:section title="Advanced push settings">
       <f:entry title="Fail on error" field="fail" description="Fail the build if the image cannot be pushed">
         <f:checkbox />
       </f:entry>
 
-      <f:entry title="Disable Content Trust" field="disablegitContentTrust">
+      <f:entry title="Disable Content Trust" field="disableContentTrust">
         <f:checkbox />
       </f:entry>
     </f:section>
+
+
   </f:advanced>
 </j:jelly>
