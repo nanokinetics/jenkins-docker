@@ -1,8 +1,7 @@
 package com.vivid.docker;
 
 
-import com.vivid.docker.argument.RemoveContainerCommandArgumentBuilder;
-import com.vivid.docker.argument.RunCommandArgumentBuilder;
+import com.vivid.docker.argument.*;
 import com.vivid.docker.command.DockerCommandExecutor;
 import com.vivid.docker.exception.ContainerRemovalException;
 import com.vivid.docker.exception.EnvironmentConfigurationException;
@@ -61,7 +60,9 @@ public class RunImageBuildStep extends DockerBuildStep {
     private final boolean readOnly;
     private final boolean detach;
     private final boolean disableContentTrust;
+    private final boolean pullFallbackTag;
     private final boolean removeIntermediateContainers;
+    private final boolean allowOptionalFallbackChecked;
 
     @DataBoundConstructor
     public RunImageBuildStep(String image,
@@ -103,7 +104,9 @@ public class RunImageBuildStep extends DockerBuildStep {
                              boolean readOnly,
                              boolean disableContentTrust,
                              boolean publishAllPorts,
-                             boolean removeIntermediateContainers) {
+                             boolean removeIntermediateContainers,
+                             boolean pullFallbackTag,
+                             boolean allowOptionalFallbackChecked) {
         super(alternativeDockerHost);
         this.image = image;
         this.tag = tag;
@@ -134,6 +137,7 @@ public class RunImageBuildStep extends DockerBuildStep {
         this.memoryNodeConstraint = memoryNodeConstraint;
         this.memoryLimit = memoryLimit;
         this.memorySwap = memorySwap;
+        this.allowOptionalFallbackChecked = allowOptionalFallbackChecked;
 
         this.detach = detach;
         this.pseudoTTY = pseudoTTY;
@@ -142,6 +146,7 @@ public class RunImageBuildStep extends DockerBuildStep {
         this.readOnly = readOnly;
         this.disableContentTrust = disableContentTrust;
         this.removeIntermediateContainers = removeIntermediateContainers;
+        this.pullFallbackTag = pullFallbackTag;
 
         Number n;
         if ((n = Util.tryParseNumber(cpuShares, null)) != null) {
@@ -181,15 +186,18 @@ public class RunImageBuildStep extends DockerBuildStep {
             }
 
             if (!imageExists(imageName, imageTag, launcher, environment)) {
-                String fallbackImageTag = FieldUtil.getMacroReplacedFieldValue(fallbackTag, environment).toLowerCase();
                 launcher.getListener().getLogger().append("Unable to locate image \"" + imageName + "\" by tag \"" + imageTag + "\n");
-                if(StringUtils.isEmpty(fallbackImageTag)) {
-                    launcher.getListener().getLogger().append("No fallback tag has been specified.\n");
-                    throw new ImageNotFoundException(imageName, imageTag);
-                } else if (!imageExists(imageName, fallbackImageTag, launcher, environment)) {
+
+                String fallbackImageTag = FieldUtil.getMacroReplacedFieldValue(fallbackTag, environment).toLowerCase();
+
+                if (pullFallbackTag) {
+                    pullFallbacktag(imageName, fallbackImageTag, build, launcher, listener, environment);
+                }
+
+                if (!imageExists(imageName, fallbackImageTag, launcher, environment)) {
                     throw new ImageNotFoundException(imageName, imageTag, fallbackImageTag);
                 } else {
-                    launcher.getListener().getLogger().append("Using \"" + fallbackImageTag + "\" as the fallback tag.\n");
+                    launcher.getListener().getLogger().append(String.format("Using \"%s\" as the fallback tag.\n", fallbackImageTag));
                     imageTag = fallbackImageTag;
                 }
             } else {
@@ -370,7 +378,7 @@ public class RunImageBuildStep extends DockerBuildStep {
         ByteArrayOutputStream stderr = new ByteArrayOutputStream();
         String command = String.format("%s pull %s:%s", getDockerConfigurationDescriptor().getDockerBinary(), imageName, tag);
 
-         do {
+        do {
             attempt++;
             result = launcher.launch()
                     .cmdAsSingleString(command)
@@ -395,6 +403,22 @@ public class RunImageBuildStep extends DockerBuildStep {
             }
         } while (pullAlreadyInProgress && attempt < MAX_PULL_RETRIES);
         return result == SUCCESS;
+    }
+
+    public void pullFallbacktag(String imageName, String fallbackTag, AbstractBuild build, Launcher launcher, BuildListener listener, EnvVars envVars) throws ImageNotFoundException {
+        if(StringUtils.isEmpty(fallbackTag)) {
+            launcher.getListener().getLogger().append("No fallback tag has been specified.\n");
+            throw new ImageNotFoundException(imageName, fallbackTag);
+        }
+
+        launcher.getListener().getLogger().append(String.format("Using \"%s\" as the fallback tag.\n", fallbackTag));
+        launcher.getListener().getLogger().append("Pulling.\n");
+
+        PullCommandArgumentBuilder pullCommandBuilder = new PullCommandArgumentBuilder()
+                .image(String.format("%s:%s", imageName, fallbackTag));
+
+        DockerCommandExecutor command = new DockerCommandExecutor(pullCommandBuilder, envVars);
+        command.execute(build, launcher, listener);
     }
 
     public String getImage() {
@@ -551,6 +575,14 @@ public class RunImageBuildStep extends DockerBuildStep {
 
     public boolean isRemoveIntermediateContainers() {
         return removeIntermediateContainers;
+    }
+
+    public boolean isPullFallbackTag() {
+        return pullFallbackTag;
+    }
+
+    public boolean isAllowOptionalFallbackChecked() {
+        return allowOptionalFallbackChecked;
     }
 }
 

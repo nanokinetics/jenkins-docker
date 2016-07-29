@@ -9,6 +9,7 @@ public final class Constants {
 
     public static final String BUILD_COMMAND = "build";
     public static final String RUN_COMMAND = "run";
+    public static final String PUL_COMMAND = "pull";
     public static final String REMOVE_COMMAND = "rm";
 
     public static final String BINARY = "/usr/bin/docker";
