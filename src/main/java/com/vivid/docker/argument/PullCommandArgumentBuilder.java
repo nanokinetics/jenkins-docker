@@ -2,7 +2,7 @@ package com.vivid.docker.argument;
 
 import hudson.util.*;
 
-public class PullCommandArgumentBuilder extends ArgumentBuilder {
+public class PullCommandArgumentBuilder extends DockerHubInteractionArgumerntBuilder<PushCommandArgumentBuilder> {
     private String image;
 
     public PullCommandArgumentBuilder() {
@@ -17,13 +17,6 @@ public class PullCommandArgumentBuilder extends ArgumentBuilder {
     public final PullCommandArgumentBuilder pullAllTags(boolean value) {
         if (value) {
             argumentListBuilder.add("--all-tags");
-        }
-        return this;
-    }
-
-    public final PullCommandArgumentBuilder disableContentTrust(boolean value) {
-        if (value) {
-            argumentListBuilder.add("--disable-content-trust");
         }
         return this;
     }

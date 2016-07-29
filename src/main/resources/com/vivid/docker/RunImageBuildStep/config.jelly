@@ -9,9 +9,25 @@
       <f:textbox default="latest" />
   </f:entry>
 
-  <f:entry title="Fallback Tag" field="fallbackTag" description="Specify an alternative tag to use if a tag is not found.">
-    <f:textbox />
-  </f:entry>
+  <f:block>
+    <table style="width:100%">
+      <f:optionalBlock name="allowOptionalFallbackChecked" checked="${instance.allowOptionalFallbackChecked}" inline="true"  title="Allow fallback">
+        <f:entry title="Fallback Tag" field="fallbackTag">
+            <f:textbox default="latest" />
+        </f:entry>
+        <f:advanced>
+            <f:section title="Fallback Settings">
+                <f:entry title="Pull tag from DockerHub" field="pullFallbackTag">
+                    <f:checkbox />
+                </f:entry>
+                <f:entry title="Disable Content Trust" field="disableContentTrust">
+                    <f:checkbox />
+                </f:entry>
+            </f:section>
+        </f:advanced>
+      </f:optionalBlock>
+    </table>
+  </f:block>
 
   <f:entry title="Container Name" field="name">
     <f:textbox />
@@ -20,16 +36,6 @@
   <f:entry title="Labels" field="labels">
     <f:textbox />
   </f:entry>
-
-  <f:block>
-    <table style="width:100%">
-      <f:optionalBlock title="Read labels from file(s)">
-        <f:entry title="Files">
-          <f:textarea />
-        </f:entry>
-      </f:optionalBlock>
-    </table>
-  </f:block>
 
   <f:entry title="Command" field="command">
     <f:textbox />
