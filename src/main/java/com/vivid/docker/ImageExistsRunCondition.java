@@ -1,7 +1,6 @@
 package com.vivid.docker;
 
-import com.vivid.hudson.docker.*;
-import com.vivid.hudson.docker.util.*;
+import com.vivid.docker.util.*;
 import hudson.*;
 import hudson.model.*;
 import jenkins.model.*;

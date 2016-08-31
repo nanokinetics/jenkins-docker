@@ -25,18 +25,14 @@ public class DockerBuildStep extends Builder {
         this.alternativeDockerHost = alternativeDockerHost;
     }
 
-    public BuildImageBuildStepDescriptor getDockerConfigurationDescriptor() {
-        return (BuildImageBuildStepDescriptor) Jenkins.getInstance().getDescriptor(BuildImageBuildStep.class);
-    }
-
     public EnvVars getEnvironment(AbstractBuild build, BuildListener listener) throws EnvironmentConfigurationException {
         try {
             EnvVars envVars = build.getEnvironment(listener);
 
             if (StringUtils.isNotBlank(alternativeDockerHost)) {
                 envVars.put("DOCKER_HOST", FieldUtil.getMacroReplacedFieldValue(alternativeDockerHost, envVars));
-            } else if(StringUtils.isNotBlank(getDockerConfigurationDescriptor().getDockerHost())) {
-                envVars.put("DOCKER_HOST", getDockerConfigurationDescriptor().getDockerHost());
+            } else if(StringUtils.isNotBlank(BuildHelper.getDockerHost())) {
+                envVars.put("DOCKER_HOST", BuildHelper.getDockerHost());
             }
             return envVars;
         } catch (IOException e) {

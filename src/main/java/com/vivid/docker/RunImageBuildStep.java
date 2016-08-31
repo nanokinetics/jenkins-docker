@@ -314,7 +314,7 @@ public class RunImageBuildStep extends DockerBuildStep {
             consoleOutput = new PipedOutputStream(pipedInputStream);
 
             int result = launcher.launch()
-                    .cmdAsSingleString(getDockerConfigurationDescriptor().getDockerBinary() + " ps -a --filter=\"name=^/" + containerName + "$\" --format={{.ID}}")
+                    .cmdAsSingleString(BuildHelper.getDockerBinary() + " ps -a --filter=\"name=^/" + containerName + "$\" --format={{.ID}}")
                     .stdout(consoleOutput)
                     .envs(envVars)
                     .quiet(true)
@@ -350,7 +350,7 @@ public class RunImageBuildStep extends DockerBuildStep {
         try {
             launcher.getListener().getLogger().printf("Checking if image exists [%s:%s]...\n", imageName, tag);
             int result = launcher.launch()
-                    .cmdAsSingleString(getDockerConfigurationDescriptor().getDockerBinary() + " history " + imageName + ":" + tag)
+                    .cmdAsSingleString(BuildHelper.getDockerBinary() + " history " + imageName + ":" + tag)
                     .quiet(true)
                     .envs(envVars)
                     .join();
@@ -376,7 +376,7 @@ public class RunImageBuildStep extends DockerBuildStep {
         boolean pullAlreadyInProgress;
         ByteArrayOutputStream stdout = new ByteArrayOutputStream();
         ByteArrayOutputStream stderr = new ByteArrayOutputStream();
-        String command = String.format("%s pull %s:%s", getDockerConfigurationDescriptor().getDockerBinary(), imageName, tag);
+        String command = String.format("%s pull %s:%s", BuildHelper.getDockerBinary(), imageName, tag);
 
         do {
             attempt++;
