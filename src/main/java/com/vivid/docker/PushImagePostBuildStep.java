@@ -49,7 +49,7 @@ public class PushImagePostBuildStep extends DockerPostBuildStep {
                 return command.execute(build, launcher, listener);
 
             } catch (EnvironmentConfigurationException e) {
-                listener.getLogger().append(e.getMessage());
+                launcher.getListener().fatalError(String.format("Error: %s\n", e.getMessage()));
                 return false;
             }
         }

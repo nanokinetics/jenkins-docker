@@ -91,6 +91,7 @@ public class BuildImageBuildStepTest {
 
         //Stub launcher builder pattern
         PowerMockito.when(mockLauncher.launch()).thenReturn(mockProcStarter);
+        PowerMockito.when(mockLauncher.getListener()).thenReturn(mockBuildListener);
         PowerMockito.when(mockBuildListener.getLogger()).thenReturn(mockPrintStream);
 
         PowerMockito.when(mockProcStarter.cmds(any(ArgumentListBuilder.class))).thenReturn(mockProcStarter);
@@ -110,7 +111,7 @@ public class BuildImageBuildStepTest {
     @Test
     public void testFailsWhenConfiguringEnvironment() throws EnvironmentConfigurationException {
         BuildImageBuildStep stepSpy = Mockito.spy(constructDefault(IMAGE_NAME, TAG_NAME));
-        PowerMockito.when(stepSpy.getEnvironment(mockAbstractBuild, mockBuildListener)).thenThrow(EnvironmentConfigurationException.class);
+        PowerMockito.doThrow(new EnvironmentConfigurationException("", null)).when(stepSpy).getEnvironment(mockAbstractBuild, mockBuildListener);
         boolean success = stepSpy.perform(mockAbstractBuild, mockLauncher, mockBuildListener);
         assertThat(success, is(false));
     }

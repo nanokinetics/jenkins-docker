@@ -7,7 +7,6 @@ import com.vivid.docker.exception.ContainerRemovalException;
 import com.vivid.docker.exception.EnvironmentConfigurationException;
 import com.vivid.docker.exception.ImageNotFoundException;
 import com.vivid.docker.helper.*;
-import com.vivid.docker.helper.StreamUtil;
 import hudson.EnvVars;
 import hudson.Launcher;
 import hudson.Util;
@@ -326,11 +325,7 @@ public class RunImageBuildStep extends DockerBuildStep {
                 return containerIdBuilder.toString();
             }
 
-        } catch (IOException e) {
-            launcher.getListener().getLogger().append(e.getMessage());
-            launcher.getListener().fatalError(e.getMessage());
-        } catch (InterruptedException e) {
-            launcher.getListener().getLogger().append(e.getMessage());
+        } catch (IOException | InterruptedException e) {
             launcher.getListener().fatalError(e.getMessage());
         }
 
@@ -354,10 +349,8 @@ public class RunImageBuildStep extends DockerBuildStep {
 
             return result == SUCCESS;
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (IOException | InterruptedException e) {
+            launcher.getListener().fatalError(String.format("Error: %s\n", e.getMessage()));
         }
         return false;
     }

@@ -110,9 +110,10 @@ public class BuildImageBuildStep extends DockerBuildStep {
             return command.execute(build, launcher, listener);
 
         } catch (EnvironmentConfigurationException e) {
-            e.printStackTrace();
-            return false;
+            launcher.getListener().fatalError(String.format("Error: %s\n", e.getMessage()));
         }
+
+        return false;
     }
 
     private void createDockerFile(String path) {

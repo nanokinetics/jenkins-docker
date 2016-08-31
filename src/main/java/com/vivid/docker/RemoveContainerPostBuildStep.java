@@ -6,7 +6,6 @@ import com.vivid.docker.command.DockerCommandExecutor;
 import com.vivid.docker.exception.ContainerRemovalException;
 import com.vivid.docker.exception.EnvironmentConfigurationException;
 import com.vivid.docker.helper.FieldHelper;
-import com.vivid.docker.helper.StreamUtil;
 import hudson.EnvVars;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
@@ -72,11 +71,8 @@ public class RemoveContainerPostBuildStep extends DockerPostBuildStep {
             }
 
             return true;
-        } catch (EnvironmentConfigurationException e) {
-            listener.getLogger().append(e.getMessage());
-            return false;
-        } catch (ContainerRemovalException e) {
-            listener.getLogger().append(e.getMessage());
+        } catch (EnvironmentConfigurationException | ContainerRemovalException e) {
+            launcher.getListener().fatalError(String.format("Error: %s\n", e.getMessage()));
             return false;
         }
     }
@@ -102,10 +98,7 @@ public class RemoveContainerPostBuildStep extends DockerPostBuildStep {
         if(cidFile != null) {
             try (BufferedReader fileReader = new BufferedReader(new FileReader(cidFile))){
                 containerId = fileReader.readLine();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
             } catch (IOException e) {
-                e.printStackTrace();
             }
         }
         return containerId;
@@ -134,12 +127,8 @@ public class RemoveContainerPostBuildStep extends DockerPostBuildStep {
                 return containerIdBuilder.toString();
             }
 
-        } catch (IOException e) {
-            launcher.getListener().getLogger().append(e.getMessage());
-            launcher.getListener().fatalError(e.getMessage());
-        } catch (InterruptedException e) {
-            launcher.getListener().getLogger().append(e.getMessage());
-            launcher.getListener().fatalError(e.getMessage());
+        } catch (IOException | InterruptedException e) {
+            launcher.getListener().fatalError(String.format("Error: %s\n", e.getMessage()));
         }
 
         return null;

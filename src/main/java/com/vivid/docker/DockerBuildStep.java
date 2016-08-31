@@ -34,10 +34,8 @@ public class DockerBuildStep extends Builder {
                 envVars.put("DOCKER_HOST", BuildHelper.getDockerHost());
             }
             return envVars;
-        } catch (IOException e) {
-            throw new EnvironmentConfigurationException(e);
-        } catch (InterruptedException e) {
-            throw new EnvironmentConfigurationException(e);
+        } catch (IOException | InterruptedException e) {
+            throw new EnvironmentConfigurationException(e.getMessage(), e);
         }
     }
 
