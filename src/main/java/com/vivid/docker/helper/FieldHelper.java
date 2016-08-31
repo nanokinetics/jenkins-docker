@@ -1,4 +1,4 @@
-package com.vivid.docker.util;
+package com.vivid.docker.helper;
 
 import hudson.EnvVars;
 import hudson.Util;
@@ -7,7 +7,7 @@ import org.apache.commons.lang.StringUtils;
 /**
  * Created by Phil Madden on 9/17/15.
  */
-public final class FieldUtil {
+public final class FieldHelper {
 
     public static final String getMacroReplacedFieldValue(String fieldValue, EnvVars envVars) {
         if(StringUtils.isNotBlank(fieldValue)) {

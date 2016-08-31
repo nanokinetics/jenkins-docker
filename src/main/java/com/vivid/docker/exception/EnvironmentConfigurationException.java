@@ -5,7 +5,7 @@ package com.vivid.docker.exception;
  */
 public class EnvironmentConfigurationException extends Exception {
 
-    public EnvironmentConfigurationException(Throwable e) {
-        super(e);
+    public EnvironmentConfigurationException(String message, Throwable t) {
+        super(message, t);
     }
 }

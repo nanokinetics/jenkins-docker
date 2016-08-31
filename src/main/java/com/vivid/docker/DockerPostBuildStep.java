@@ -1,7 +1,7 @@
 package com.vivid.docker;
 
 import com.vivid.docker.exception.EnvironmentConfigurationException;
-import com.vivid.docker.util.FieldUtil;
+import com.vivid.docker.helper.FieldHelper;
 import hudson.EnvVars;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
@@ -31,15 +31,13 @@ public class DockerPostBuildStep extends Recorder {
         try {
             EnvVars envVars = build.getEnvironment(listener);
             if (StringUtils.isNotBlank(alternativeDockerHost)) {
-                envVars.put("DOCKER_HOST", FieldUtil.getMacroReplacedFieldValue(alternativeDockerHost, envVars));
+                envVars.put("DOCKER_HOST", FieldHelper.getMacroReplacedFieldValue(alternativeDockerHost, envVars));
             } else if(StringUtils.isNotBlank(getDockerConfigurationDescriptor().getDockerHost())) {
                 envVars.put("DOCKER_HOST", getDockerConfigurationDescriptor().getDockerHost());
             }
             return envVars;
-        } catch (IOException e) {
-            throw new EnvironmentConfigurationException(e);
-        } catch (InterruptedException e) {
-            throw new EnvironmentConfigurationException(e);
+        } catch (IOException | InterruptedException e) {
+            throw new EnvironmentConfigurationException(e.getMessage(), e);
         }
     }
 
