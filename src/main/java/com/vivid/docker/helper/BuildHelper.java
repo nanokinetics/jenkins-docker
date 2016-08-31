@@ -1,5 +1,6 @@
-package com.vivid.docker;
+package com.vivid.docker.helper;
 
+import com.vivid.docker.*;
 import jenkins.model.*;
 
 public class BuildHelper {

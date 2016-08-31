@@ -3,7 +3,7 @@ package com.vivid.docker;
 import com.vivid.docker.argument.*;
 import com.vivid.docker.command.*;
 import com.vivid.docker.exception.*;
-import com.vivid.docker.util.*;
+import com.vivid.docker.helper.*;
 import hudson.*;
 import hudson.model.*;
 import org.kohsuke.stapler.*;
@@ -37,7 +37,7 @@ public class PushImagePostBuildStep extends DockerPostBuildStep {
             try {
                 EnvVars environment = getEnvironment(build, listener);
 
-                String tagName = FieldUtil.getMacroReplacedFieldValue(tag, environment);
+                String tagName = FieldHelper.getMacroReplacedFieldValue(tag, environment);
 
                 PushCommandArgumentBuilder pushCommandArgumentBuilder = new PushCommandArgumentBuilder()
                         .disableContentTrust(disableContentTrust)

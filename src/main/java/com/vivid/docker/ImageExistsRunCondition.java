@@ -1,6 +1,6 @@
 package com.vivid.docker;
 
-import com.vivid.docker.util.*;
+import com.vivid.docker.helper.*;
 import hudson.*;
 import hudson.model.*;
 import jenkins.model.*;
@@ -38,8 +38,8 @@ public class ImageExistsRunCondition extends RunCondition {
     @Override
     public boolean runPerform(AbstractBuild<?, ?> abstractBuild, BuildListener buildListener) throws Exception {
         EnvVars envVars = abstractBuild.getEnvironment(buildListener);
-        String imageTag = FieldUtil.getMacroReplacedFieldValue(tag, envVars).toLowerCase();
-        String imageVariant = FieldUtil.getMacroReplacedFieldValue(variant, envVars).toLowerCase();
+        String imageTag = FieldHelper.getMacroReplacedFieldValue(tag, envVars).toLowerCase();
+        String imageVariant = FieldHelper.getMacroReplacedFieldValue(variant, envVars).toLowerCase();
 
         Launcher launcher = Jenkins.getInstance().createLauncher(buildListener);
 

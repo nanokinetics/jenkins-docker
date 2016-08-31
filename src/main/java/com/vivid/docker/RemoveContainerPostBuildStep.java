@@ -5,8 +5,8 @@ import com.vivid.docker.argument.RemoveContainerCommandArgumentBuilder;
 import com.vivid.docker.command.DockerCommandExecutor;
 import com.vivid.docker.exception.ContainerRemovalException;
 import com.vivid.docker.exception.EnvironmentConfigurationException;
-import com.vivid.docker.util.FieldUtil;
-import com.vivid.docker.util.StreamUtil;
+import com.vivid.docker.helper.FieldHelper;
+import com.vivid.docker.helper.StreamUtil;
 import hudson.EnvVars;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
@@ -46,8 +46,8 @@ public class RemoveContainerPostBuildStep extends DockerPostBuildStep {
             EnvVars environment = getEnvironment(build, listener);
 
             String containerId;
-            String[] containerIds = FieldUtil.tokenize(id, environment);
-            String[] containerNames = FieldUtil.tokenize(name, environment);
+            String[] containerIds = FieldHelper.tokenize(id, environment);
+            String[] containerNames = FieldHelper.tokenize(name, environment);
 
             if(ArrayUtils.isNotEmpty(containerIds)) {
                 for (String container : containerIds) {
@@ -65,7 +65,7 @@ public class RemoveContainerPostBuildStep extends DockerPostBuildStep {
             }
 
             if (StringUtils.isNotBlank(cidFilePath)) {
-                File cidFile = new File(FieldUtil.getMacroReplacedFieldValue(cidFilePath, environment));
+                File cidFile = new File(FieldHelper.getMacroReplacedFieldValue(cidFilePath, environment));
                 containerId = getContainerIdFromCidFile(cidFile);
                 listener.getLogger().append("Attempting to remove container with id: " + containerId + ".\n");
                 removeContainerById(containerId, build, launcher, listener, environment);
@@ -100,29 +100,20 @@ public class RemoveContainerPostBuildStep extends DockerPostBuildStep {
     private String getContainerIdFromCidFile(File cidFile) {
         String containerId = null;
         if(cidFile != null) {
-            BufferedReader fileReader = null;
-            try {
-                fileReader = new BufferedReader(new FileReader(cidFile));
+            try (BufferedReader fileReader = new BufferedReader(new FileReader(cidFile))){
                 containerId = fileReader.readLine();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
-            } finally {
-                StreamUtil.closeStream(fileReader);
             }
         }
         return containerId;
     }
 
     private String getContainerIdFromContainerName(String containerName, Launcher launcher, EnvVars envVars)  {
-        PipedInputStream pipedInputStream = null;
-        PipedOutputStream consoleOutput;
-
-        try {
-            pipedInputStream = new PipedInputStream();
-            consoleOutput = new PipedOutputStream(pipedInputStream);
-
+        try (PipedInputStream pipedInputStream = new PipedInputStream();
+             PipedOutputStream consoleOutput = new PipedOutputStream(pipedInputStream);){
             int result = launcher.launch()
                     .cmdAsSingleString(getDockerConfigurationDescriptor().getDockerBinary() + " ps -a --filter=name=" + containerName + " --format={{.ID}}")
                     .stdout(consoleOutput)
@@ -149,8 +140,6 @@ public class RemoveContainerPostBuildStep extends DockerPostBuildStep {
         } catch (InterruptedException e) {
             launcher.getListener().getLogger().append(e.getMessage());
             launcher.getListener().fatalError(e.getMessage());
-        } finally {
-            StreamUtil.closeStream(pipedInputStream);
         }
 
         return null;

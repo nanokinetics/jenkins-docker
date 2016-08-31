@@ -6,8 +6,8 @@ import com.vivid.docker.command.DockerCommandExecutor;
 import com.vivid.docker.exception.ContainerRemovalException;
 import com.vivid.docker.exception.EnvironmentConfigurationException;
 import com.vivid.docker.exception.ImageNotFoundException;
-import com.vivid.docker.util.FieldUtil;
-import com.vivid.docker.util.StreamUtil;
+import com.vivid.docker.helper.*;
+import com.vivid.docker.helper.StreamUtil;
 import hudson.EnvVars;
 import hudson.Launcher;
 import hudson.Util;
@@ -174,21 +174,21 @@ public class RunImageBuildStep extends DockerBuildStep {
         try {
             EnvVars environment = getEnvironment(build, listener);
 
-            String containerName = FieldUtil.getMacroReplacedFieldValue(name, environment).toLowerCase();
-            String imageName = FieldUtil.getMacroReplacedFieldValue(image, environment).toLowerCase();
-            String imageTag = FieldUtil.getMacroReplacedFieldValue(tag, environment).toLowerCase();
+            String containerName = FieldHelper.getMacroReplacedFieldValue(name, environment).toLowerCase();
+            String imageName = FieldHelper.getMacroReplacedFieldValue(image, environment).toLowerCase();
+            String imageTag = FieldHelper.getMacroReplacedFieldValue(tag, environment).toLowerCase();
 
             launcher.getListener().getLogger().append("\nCreating container from image: \"" + imageName + "\" tag \"" + imageTag + "\"..\n");
 
             File cidFile = null;
             if (StringUtils.isNotBlank(cidFilePath)) {
-                cidFile = new File(FieldUtil.getMacroReplacedFieldValue(cidFilePath, environment));
+                cidFile = new File(FieldHelper.getMacroReplacedFieldValue(cidFilePath, environment));
             }
 
             if (!imageExists(imageName, imageTag, launcher, environment)) {
                 launcher.getListener().getLogger().append("Unable to locate image \"" + imageName + "\" by tag \"" + imageTag + "\n");
 
-                String fallbackImageTag = FieldUtil.getMacroReplacedFieldValue(fallbackTag, environment).toLowerCase();
+                String fallbackImageTag = FieldHelper.getMacroReplacedFieldValue(fallbackTag, environment).toLowerCase();
 
                 if (pullFallbackTag) {
                     pullFallbacktag(imageName, fallbackImageTag, build, launcher, listener, environment);
@@ -212,12 +212,12 @@ public class RunImageBuildStep extends DockerBuildStep {
             RunCommandArgumentBuilder arguments = new RunCommandArgumentBuilder()
                     .image(imageName + ":" + imageTag)
                     .name(containerName)
-                    .labels(FieldUtil.tokenize(labels, environment))
+                    .labels(FieldHelper.tokenize(labels, environment))
                     .user(user)
                     .command(command)
-                    .commandArguments(FieldUtil.tokenize(commandArguments, environment))
-                    .expose(FieldUtil.tokenize(exposedPorts))
-                    .publishPorts(FieldUtil.tokenizeToIntArray(publishPorts, environment))
+                    .commandArguments(FieldHelper.tokenize(commandArguments, environment))
+                    .expose(FieldHelper.tokenize(exposedPorts))
+                    .publishPorts(FieldHelper.tokenizeToIntArray(publishPorts, environment))
                     .cpuPeriod(cpuPeriod)
                     .cpuQuota(cpuQuota)
                     .cpuShares(cpuShares)
@@ -226,11 +226,11 @@ public class RunImageBuildStep extends DockerBuildStep {
                     .memoryLimit(memoryLimit)
                     .memorySwap(memorySwap)
                     .mems(memoryNodeConstraint)
-                    .environmentVariables(FieldUtil.tokenize(environmentVariables, environment))
+                    .environmentVariables(FieldHelper.tokenize(environmentVariables, environment))
                     .workingDirectory(workingDirectory)
                     .volumeDriver(volumeDriver)
-                    .volumes(FieldUtil.tokenize(mountVolumes, environment))
-                    .links(FieldUtil.tokenize(links, environment))
+                    .volumes(FieldHelper.tokenize(mountVolumes, environment))
+                    .links(FieldHelper.tokenize(links, environment))
                     .disbaleContentTrust(disableContentTrust)
                     .readOnly(readOnly)
                     .pseudoTTY(pseudoTTY)
@@ -290,28 +290,21 @@ public class RunImageBuildStep extends DockerBuildStep {
     private String getContainerIdFromCidFile(File cidFile) {
         String containerId = null;
         if(cidFile != null) {
-            BufferedReader fileReader = null;
-            try {
-                fileReader = new BufferedReader(new FileReader(cidFile));
+            try (BufferedReader fileReader = new BufferedReader(new FileReader(cidFile))) {
+                ;
                 containerId = fileReader.readLine();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
-            } finally {
-                StreamUtil.closeStream(fileReader);
             }
         }
         return containerId;
     }
 
     private String getContainerIdFromContainerName(String containerName, Launcher launcher, EnvVars envVars)  {
-        PipedInputStream pipedInputStream = null;
-        PipedOutputStream consoleOutput;
-
-        try {
-            pipedInputStream = new PipedInputStream();
-            consoleOutput = new PipedOutputStream(pipedInputStream);
+        try (PipedInputStream pipedInputStream = new PipedInputStream();
+             PipedOutputStream consoleOutput = new PipedOutputStream(pipedInputStream)) {
 
             int result = launcher.launch()
                     .cmdAsSingleString(BuildHelper.getDockerBinary() + " ps -a --filter=\"name=^/" + containerName + "$\" --format={{.ID}}")
@@ -339,8 +332,6 @@ public class RunImageBuildStep extends DockerBuildStep {
         } catch (InterruptedException e) {
             launcher.getListener().getLogger().append(e.getMessage());
             launcher.getListener().fatalError(e.getMessage());
-        } finally {
-            StreamUtil.closeStream(pipedInputStream);
         }
 
         return null;

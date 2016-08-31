@@ -3,12 +3,11 @@ package com.vivid.docker;
 import com.vivid.docker.argument.ArgumentBuilder;
 import com.vivid.docker.command.DockerCommandExecutor;
 import com.vivid.docker.exception.EnvironmentConfigurationException;
-import com.vivid.docker.util.FieldUtil;
+import com.vivid.docker.helper.*;
 import hudson.EnvVars;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.tasks.Builder;
-import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
@@ -30,7 +29,7 @@ public class DockerBuildStep extends Builder {
             EnvVars envVars = build.getEnvironment(listener);
 
             if (StringUtils.isNotBlank(alternativeDockerHost)) {
-                envVars.put("DOCKER_HOST", FieldUtil.getMacroReplacedFieldValue(alternativeDockerHost, envVars));
+                envVars.put("DOCKER_HOST", FieldHelper.getMacroReplacedFieldValue(alternativeDockerHost, envVars));
             } else if(StringUtils.isNotBlank(BuildHelper.getDockerHost())) {
                 envVars.put("DOCKER_HOST", BuildHelper.getDockerHost());
             }

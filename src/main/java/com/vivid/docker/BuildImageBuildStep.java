@@ -3,7 +3,7 @@ package com.vivid.docker;
 import com.vivid.docker.argument.BuildCommandArgumentBuilder;
 import com.vivid.docker.command.DockerCommandExecutor;
 import com.vivid.docker.exception.EnvironmentConfigurationException;
-import com.vivid.docker.util.FieldUtil;
+import com.vivid.docker.helper.FieldHelper;
 import hudson.EnvVars;
 import hudson.Launcher;
 import hudson.Util;
@@ -95,7 +95,7 @@ public class BuildImageBuildStep extends DockerBuildStep {
                     .cpuQuota(cpuQuota)
                     .cpus(cpuConstraint)
                     .cpuShares(cpuShares)
-                    .file(FieldUtil.getMacroReplacedFieldValue(dockerFilePath, environment))
+                    .file(FieldHelper.getMacroReplacedFieldValue(dockerFilePath, environment))
                     .forceRemove(forceRemoveIntermediateContainers)
                     .memoryLimit(memoryLimit)
                     .memorySwap(memorySwap)
@@ -103,7 +103,7 @@ public class BuildImageBuildStep extends DockerBuildStep {
                     .noCache(noCache)
                     .pull(pull)
                     .remove(removeIntermediateContainers)
-                    .tag((FieldUtil.getMacroReplacedFieldValue(name, environment) + ":" + FieldUtil.getMacroReplacedFieldValue(tag, environment)).toLowerCase())
+                    .tag((FieldHelper.getMacroReplacedFieldValue(name, environment) + ":" + FieldHelper.getMacroReplacedFieldValue(tag, environment)).toLowerCase())
                     .buildContext(buildContext);
 
             DockerCommandExecutor command = getCommand(arguments, environment);
