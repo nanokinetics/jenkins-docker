@@ -25,9 +25,20 @@ public class BuildCommandArgumentBuilder extends ImageArgumentBuilder<BuildComma
         return argumentListBuilder;
     }
 
-    public BuildCommandArgumentBuilder tag(String tag) {
+    public BuildCommandArgumentBuilder tags(String image, String tag) {
         if(tag != null && !tag.isEmpty()) {
-            argumentListBuilder.addKeyValuePair("--", "tag", wrapInQuotes(tag), false);
+            for (String t : tag.split(",")) {
+                argumentListBuilder.addKeyValuePair("--", "tag", String.format("\"%s:%s\"", image, t.trim()), false);
+            }
+        }
+        return this;
+    }
+
+    public BuildCommandArgumentBuilder args(String args) {
+        if (args != null && !args.isEmpty()) {
+            for (String arg : args.split("\n")) {
+                argumentListBuilder.add("--build-arg").add(arg);
+            }
         }
         return this;
     }

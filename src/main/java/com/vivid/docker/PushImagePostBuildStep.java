@@ -35,18 +35,30 @@ public class PushImagePostBuildStep extends DockerPostBuildStep {
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
         if (shouldTriggerBuild(build)) {
             try {
+
+                boolean result = false;
+
                 EnvVars environment = getEnvironment(build, listener);
 
                 String tagName = FieldHelper.getMacroReplacedFieldValue(tag, environment);
 
-                PushCommandArgumentBuilder pushCommandArgumentBuilder = new PushCommandArgumentBuilder()
-                        .disableContentTrust(disableContentTrust)
-                        .image(String.format("%s:%s", image, tagName));
+                for (String t : tagName.split(",")) {
 
-                listener.getLogger().append(String.format("Pushing \"%s:%s\" to Docker Hub.", image, tagName));
+                    PushCommandArgumentBuilder pushCommandArgumentBuilder = new PushCommandArgumentBuilder()
+                            .disableContentTrust(disableContentTrust)
+                            .image(String.format("%s:%s", image, t.trim().toLowerCase()));
 
-                DockerCommandExecutor command = new DockerCommandExecutor(pushCommandArgumentBuilder, environment);
-                return command.execute(build, launcher, listener);
+                    listener.getLogger().append(String.format("Pushing \"%s:%s\" to Docker Hub.", image, t.trim().toLowerCase()));
+
+                    DockerCommandExecutor command = new DockerCommandExecutor(pushCommandArgumentBuilder, environment);
+                    result = command.execute(build, launcher, listener);
+
+                    if (!result) {
+                        break;
+                    }
+                }
+
+                return result;
 
             } catch (EnvironmentConfigurationException e) {
                 launcher.getListener().fatalError(String.format("Error: %s\n", e.getMessage()));

@@ -26,12 +26,14 @@ public class BuildImageBuildStep extends DockerBuildStep {
     private final String memoryLimit;
     private final String memorySwap;
     private final String dockerFileContent;
+    private final String args;
     private final boolean noCache;
     private final boolean pull;
     private final boolean disableContentTrust;
     private final boolean forceRemoveIntermediateContainers;
     private final boolean removeIntermediateContainers;
     private final boolean dockerFileContentChecked;
+    private final boolean buildArgsChecked;
     private final String buildContext;
 
     @DataBoundConstructor
@@ -46,6 +48,7 @@ public class BuildImageBuildStep extends DockerBuildStep {
                                String cpuPeriod,
                                String cpuQuota,
                                String dockerFileContent,
+                               String args,
                                String alternativeDockerHost,
                                boolean noCache,
                                boolean pull,
@@ -53,6 +56,7 @@ public class BuildImageBuildStep extends DockerBuildStep {
                                boolean forceRemoveIntermediateContainers,
                                boolean removeIntermediateContainers,
                                boolean dockerFileContentChecked,
+                               boolean buildArgsChecked,
                                String buildContext) {
         super(alternativeDockerHost);
         this.name = name;
@@ -66,7 +70,9 @@ public class BuildImageBuildStep extends DockerBuildStep {
         this.cpuPeriod = (Integer) Util.tryParseNumber(cpuPeriod, null);
         this.cpuQuota = (Integer) Util.tryParseNumber(cpuQuota, null);
         this.dockerFileContent = dockerFileContent;
+        this.args = args;
         this.dockerFileContentChecked = dockerFileContentChecked;
+        this.buildArgsChecked = buildArgsChecked;
         this.noCache = noCache;
         this.pull = pull;
         this.disableContentTrust = disableContentTrust;
@@ -91,6 +97,7 @@ public class BuildImageBuildStep extends DockerBuildStep {
 
             BuildCommandArgumentBuilder arguments = new BuildCommandArgumentBuilder()
                     .disbaleContentTrust(disableContentTrust)
+                    .args(args)
                     .cpuPeriod(cpuPeriod)
                     .cpuQuota(cpuQuota)
                     .cpus(cpuConstraint)
@@ -103,7 +110,7 @@ public class BuildImageBuildStep extends DockerBuildStep {
                     .noCache(noCache)
                     .pull(pull)
                     .remove(removeIntermediateContainers)
-                    .tag((FieldHelper.getMacroReplacedFieldValue(name, environment) + ":" + FieldHelper.getMacroReplacedFieldValue(tag, environment)).toLowerCase())
+                    .tags(FieldHelper.getMacroReplacedFieldValue(name, environment).toLowerCase(), FieldHelper.getMacroReplacedFieldValue(tag, environment).toLowerCase())
                     .buildContext(buildContext);
 
             DockerCommandExecutor command = getCommand(arguments, environment);
@@ -197,5 +204,13 @@ public class BuildImageBuildStep extends DockerBuildStep {
     }
 
     public String getBuildContext() { return buildContext; }
+
+    public String getArgs() {
+        return args;
+    }
+
+    public boolean isBuildArgsChecked() {
+        return buildArgsChecked;
+    }
 }
 

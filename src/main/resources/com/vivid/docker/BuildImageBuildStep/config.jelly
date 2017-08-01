@@ -5,7 +5,7 @@
       <f:textbox />
   </f:entry>
 
-  <f:entry title="Tag" field="tag">
+  <f:entry title="Tags" field="tag">
     <f:textbox />
   </f:entry>
 
@@ -16,6 +16,16 @@
   <f:entry title="Build Context (Path or URL. Default: &quot;.&quot;)" field="buildContext">
       <f:textbox />
   </f:entry>
+
+  <f:block>
+      <table style="width:100%">
+            <f:optionalBlock name="buildArgsChecked" checked="${instance.buildArgsChecked}" inline="true" title="Build Arguments">
+              <f:entry title="Arguments" field="args" description="Specify multiple build arguments with a new line.">
+                  <f:textarea class="setting-input fixed-width" />
+              </f:entry>
+            </f:optionalBlock>
+      </table>
+  </f:block>
 
   <f:block>
      <table style="width:100%">

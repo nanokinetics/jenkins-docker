@@ -5,7 +5,7 @@
       <f:textbox />
   </f:entry>
 
-  <f:entry title="Tag" field="tag">
+  <f:entry title="Tags" field="tag">
       <f:textbox default="latest" />
   </f:entry>
 
