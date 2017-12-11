@@ -28,7 +28,7 @@ public class BuildCommandArgumentBuilder extends ImageArgumentBuilder<BuildComma
     public BuildCommandArgumentBuilder tags(String image, String tag) {
         if(tag != null && !tag.isEmpty()) {
             for (String t : tag.split(",")) {
-                argumentListBuilder.addKeyValuePair("--", "tag", String.format("\"%s:%s\"", image, t.trim()), false);
+                argumentListBuilder.addKeyValuePair("--", "tag", String.format("%s:%s", image, t.trim()), false);
             }
         }
         return this;
