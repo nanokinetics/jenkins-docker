@@ -46,7 +46,7 @@ public class BuildCommandArgumentBuilder extends ImageArgumentBuilder<BuildComma
     public final BuildCommandArgumentBuilder file(String file) {
         if(file != null && !file.isEmpty()) {
             buildContext = new File(file).getParent();
-            argumentListBuilder.addKeyValuePair("--", "file", wrapInQuotes(file), false);
+            argumentListBuilder.addKeyValuePair("--", "file", file, false);
             hasSpecifiedFile = true;
         }
         return this;

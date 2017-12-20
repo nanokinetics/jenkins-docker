@@ -57,19 +57,19 @@ public class ImageArgumentBuilderTest {
     @Test
     public void testMemoryLimitSpecified() {
         imageArgumentBuilder.memoryLimit(MEMORY_LIMIT);
-        assertThat(imageArgumentBuilder.build().toList(), hasItem("--memory=\"" + MEMORY_LIMIT + "\""));
+        assertThat(imageArgumentBuilder.build().toList(), hasItem("--memory=" + MEMORY_LIMIT));
     }
 
     @Test
     public void testMemorySwapSpecified() {
         imageArgumentBuilder.memorySwap(MEMORY_SWAP);
-        assertThat(imageArgumentBuilder.build().toList(), hasItem("--memory-swap=\"" + MEMORY_SWAP + "\""));
+        assertThat(imageArgumentBuilder.build().toList(), hasItem("--memory-swap=" + MEMORY_SWAP));
     }
 
     @Test
     public void testMemoryNodesSpecified() {
         imageArgumentBuilder.mems(MEMORY_NODES);
-        assertThat(imageArgumentBuilder.build().toList(), hasItem("--cpuset-mems=\"" + MEMORY_NODES + "\""));
+        assertThat(imageArgumentBuilder.build().toList(), hasItem("--cpuset-mems=" + MEMORY_NODES));
     }
 
     @Test
@@ -87,7 +87,7 @@ public class ImageArgumentBuilderTest {
     @Test
     public void testCpuConstraintSpecified() {
         imageArgumentBuilder.cpus(CPU_CONSTRAINT);
-        assertThat(imageArgumentBuilder.build().toList(), hasItem("--cpuset-cpus=\"" + CPU_CONSTRAINT + "\""));
+        assertThat(imageArgumentBuilder.build().toList(), hasItem("--cpuset-cpus=" + CPU_CONSTRAINT));
     }
 
     @Test

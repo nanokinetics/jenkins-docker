@@ -57,7 +57,7 @@ public class BuildCommandArgumentBuilderTest {
     public void testDockerFileSpecified() {
         buildCommandArgumentBuilder.file(DOCKER_FILE_PATH);
         List<String> arguments = buildCommandArgumentBuilder.build().toList();
-        assertThat(arguments, hasItem("--file=\"" + DOCKER_FILE_PATH + "\""));
+        assertThat(arguments, hasItem("--file=" + DOCKER_FILE_PATH));
         assertThat(arguments.get(arguments.size() - 1), equalTo("."));
     }
 
@@ -139,7 +139,7 @@ public class BuildCommandArgumentBuilderTest {
         buildCommandArgumentBuilder.file(DOCKER_FILE_PATH);
         buildCommandArgumentBuilder.buildContext("/foo");
         List<String> arguments = buildCommandArgumentBuilder.build().toList();
-        assertThat(arguments, hasItem("--file=\"" + DOCKER_FILE_PATH + "\""));
+        assertThat(arguments, hasItem("--file=" + DOCKER_FILE_PATH));
         assertThat(arguments.get(arguments.size() - 1), equalTo("/foo"));
     }
 }

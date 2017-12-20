@@ -94,7 +94,7 @@ public class RunCommandArgumentBuilderTest {
     public void testCidFileSpecified() {
         File cidFile = new File("");
         runCommandArgumentBuilder.cidFile(cidFile);
-        assertThat(runCommandArgumentBuilder.build().toList(), hasItem("--cidfile=\"" + cidFile.getAbsolutePath() + "\""));
+        assertThat(runCommandArgumentBuilder.build().toList(), hasItem("--cidfile=" + cidFile.getAbsolutePath()));
     }
 
     @Test
@@ -136,31 +136,31 @@ public class RunCommandArgumentBuilderTest {
     @Test
     public void testEnvironmentVariablesSpecified() {
         runCommandArgumentBuilder.environmentVariables("X=Y", "Y=X");
-        assertThat(runCommandArgumentBuilder.build().toList(), hasItems("--env=\"X=Y\"", "--env=\"Y=X\""));
+        assertThat(runCommandArgumentBuilder.build().toList(), hasItems("--env=X=Y", "--env=Y=X"));
     }
 
     @Test
     public void testExposePortsSpecified() {
         runCommandArgumentBuilder.expose("1234", "6789");
-        assertThat(runCommandArgumentBuilder.build().toList(), hasItems("--expose=\"1234\"", "--expose=\"6789\""));
+        assertThat(runCommandArgumentBuilder.build().toList(), hasItems("--expose=1234", "--expose=6789"));
     }
 
     @Test
     public void testLabelsSpecified() {
         runCommandArgumentBuilder.labels("test", "container");
-        assertThat(runCommandArgumentBuilder.build().toList(), hasItems("--label=\"test\"", "--label=\"container\""));
+        assertThat(runCommandArgumentBuilder.build().toList(), hasItems("--label=test", "--label=container"));
     }
 
     @Test
     public void testLinksSpecified() {
         runCommandArgumentBuilder.links("container1", "container2");
-        assertThat(runCommandArgumentBuilder.build().toList(), hasItems("--link=\"container1\"", "--link=\"container2\""));
+        assertThat(runCommandArgumentBuilder.build().toList(), hasItems("--link=container1", "--link=container2"));
     }
 
     @Test
     public void testNameSpecified() {
         runCommandArgumentBuilder.name("container1");
-        assertThat(runCommandArgumentBuilder.build().toList(), hasItems("--name=\"container1\""));
+        assertThat(runCommandArgumentBuilder.build().toList(), hasItems("--name=container1"));
     }
 
     @Test
@@ -220,24 +220,24 @@ public class RunCommandArgumentBuilderTest {
     @Test
     public void testUserSpecified() {
         runCommandArgumentBuilder.user("test");
-        assertThat(runCommandArgumentBuilder.build().toList(), hasItem("--user=\"test\""));
+        assertThat(runCommandArgumentBuilder.build().toList(), hasItem("--user=test"));
     }
 
     @Test
     public void testVolumeDriverSpecified() {
         runCommandArgumentBuilder.volumeDriver("org.docker.driver");
-        assertThat(runCommandArgumentBuilder.build().toList(), hasItem("--volume-driver=\"org.docker.driver\""));
+        assertThat(runCommandArgumentBuilder.build().toList(), hasItem("--volume-driver=org.docker.driver"));
     }
 
     @Test
     public void testVolumesSpecified() {
         runCommandArgumentBuilder.volumes("/var/log:/var/logs:ro", "/etc/conf:/etc/confs");
-        assertThat(runCommandArgumentBuilder.build().toList(), hasItems("--volume=\"/var/log:/var/logs:ro\"", "--volume=\"/etc/conf:/etc/confs\""));
+        assertThat(runCommandArgumentBuilder.build().toList(), hasItems("--volume=/var/log:/var/logs:ro", "--volume=/etc/conf:/etc/confs"));
     }
 
     @Test
     public void testWorkingDirectorySpecified() {
         runCommandArgumentBuilder.workingDirectory("/root");
-        assertThat(runCommandArgumentBuilder.build().toList(), hasItem("--workdir=\"/root\""));
+        assertThat(runCommandArgumentBuilder.build().toList(), hasItem("--workdir=/root"));
     }
 }

@@ -20,7 +20,7 @@ public class ProcessCommandArgumentBuilder extends ImageArgumentBuilder<ProcessC
 
     public final ProcessCommandArgumentBuilder formart(String value) {
         if(isNotEmpty(value)) {
-            argumentListBuilder.addKeyValuePair("--", "format", wrapInQuotes(value), false);
+            argumentListBuilder.addKeyValuePair("--", "format", value, false);
         }
         return this;
     }
@@ -28,7 +28,7 @@ public class ProcessCommandArgumentBuilder extends ImageArgumentBuilder<ProcessC
     public final ProcessCommandArgumentBuilder filters(String... filters) {
         if(isNotEmpty(filters)) {
             for(String filter : filters) {
-                argumentListBuilder.addKeyValuePair("--", "filter", wrapInQuotes(filter), false);
+                argumentListBuilder.addKeyValuePair("--", "filter", filter, false);
             }
         }
         return this;

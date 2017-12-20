@@ -32,28 +32,28 @@ public class ImageArgumentBuilder<T extends ArgumentBuilder> extends ArgumentBui
 
     public T cpus(String cpus) {
         if(isNotEmpty(cpus)) {
-            argumentListBuilder.addKeyValuePair("--", "cpuset-cpus", wrapInQuotes(cpus), false);
+            argumentListBuilder.addKeyValuePair("--", "cpuset-cpus", cpus, false);
         }
         return (T) this;
     }
 
     public T mems(String mems) {
         if(isNotEmpty(mems)) {
-            argumentListBuilder.addKeyValuePair("--", "cpuset-mems", wrapInQuotes(mems), false);
+            argumentListBuilder.addKeyValuePair("--", "cpuset-mems", mems, false);
         }
         return (T) this;
     }
 
     public T memorySwap(String memorySwap) {
         if(isNotEmpty(memorySwap)) {
-            argumentListBuilder.addKeyValuePair("--", "memory-swap", wrapInQuotes(memorySwap), false);
+            argumentListBuilder.addKeyValuePair("--", "memory-swap", memorySwap, false);
         }
         return (T) this;
     }
 
     public T memoryLimit(String memory) {
         if(isNotEmpty(memory)) {
-            argumentListBuilder.addKeyValuePair("--", "memory", wrapInQuotes(memory), false);
+            argumentListBuilder.addKeyValuePair("--", "memory", memory, false);
         }
         return (T) this;
     }

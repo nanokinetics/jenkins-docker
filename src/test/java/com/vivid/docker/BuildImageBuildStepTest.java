@@ -135,6 +135,6 @@ public class BuildImageBuildStepTest {
 
         stepSpy.perform(mockAbstractBuild, mockLauncher, mockBuildListener);
         ArgumentBuilder argumentBuilder = argumentBuilderArgumentCaptor.getValue();
-        assertThat(argumentBuilder.build().toList(), hasItem(("--tag=\"" + IMAGE_NAME + ":" + TAG_NAME + "\"").toLowerCase()));
+        assertThat(argumentBuilder.build().toList(), hasItem(("--tag=" + IMAGE_NAME + ":" + TAG_NAME).toLowerCase()));
     }
 }

@@ -24,14 +24,14 @@ public class RunCommandArgumentBuilder extends ImageArgumentBuilder<RunCommandAr
 
     public final RunCommandArgumentBuilder name(String name) {
         if(isNotEmpty(name)) {
-            argumentListBuilder.addKeyValuePair("--", "name", wrapInQuotes(stripWhitespace(name.toLowerCase())), false);
+            argumentListBuilder.addKeyValuePair("--", "name", stripWhitespace(name.toLowerCase()), false);
         }
         return this;
     }
 
     public final RunCommandArgumentBuilder user(String user) {
         if(isNotEmpty(user)) {
-            argumentListBuilder.addKeyValuePair("--", "user", wrapInQuotes(stripWhitespace(user)), false);
+            argumentListBuilder.addKeyValuePair("--", "user", stripWhitespace(user), false);
         }
         return this;
     }
@@ -41,7 +41,7 @@ public class RunCommandArgumentBuilder extends ImageArgumentBuilder<RunCommandAr
             if(!cidFile.exists()) {
                 cidFile.mkdirs();
             }
-            argumentListBuilder.addKeyValuePair("--", "cidfile", wrapInQuotes(cidFile.getAbsolutePath()), false);
+            argumentListBuilder.addKeyValuePair("--", "cidfile", cidFile.getAbsolutePath(), false);
         }
         return this;
     }
@@ -59,7 +59,7 @@ public class RunCommandArgumentBuilder extends ImageArgumentBuilder<RunCommandAr
     public final RunCommandArgumentBuilder environmentVariables(String... environmentVariables) {
         if(isNotEmpty(environmentVariables)) {
             for(String environmentVariable : environmentVariables) {
-                argumentListBuilder.addKeyValuePair("--", "env", wrapInQuotes(environmentVariable), false);
+                argumentListBuilder.addKeyValuePair("--", "env", environmentVariable, false);
             }
         }
         return this;
@@ -68,7 +68,7 @@ public class RunCommandArgumentBuilder extends ImageArgumentBuilder<RunCommandAr
     public final RunCommandArgumentBuilder labels(String... labels) {
         if(isNotEmpty(labels)) {
             for(String label : labels) {
-                argumentListBuilder.addKeyValuePair("--", "label", wrapInQuotes(label), false);
+                argumentListBuilder.addKeyValuePair("--", "label", label, false);
             }
         }
         return this;
@@ -77,7 +77,7 @@ public class RunCommandArgumentBuilder extends ImageArgumentBuilder<RunCommandAr
     public final RunCommandArgumentBuilder volumes(String... volumes) {
         if(isNotEmpty(volumes)) {
             for(String volume : volumes) {
-                argumentListBuilder.addKeyValuePair("--", "volume", wrapInQuotes(volume), false);
+                argumentListBuilder.addKeyValuePair("--", "volume", volume, false);
             }
         }
         return this;
@@ -86,7 +86,7 @@ public class RunCommandArgumentBuilder extends ImageArgumentBuilder<RunCommandAr
     public final RunCommandArgumentBuilder links(String... links) {
         if(isNotEmpty(links)) {
             for(String link : links) {
-                argumentListBuilder.addKeyValuePair("--", "link", wrapInQuotes(link.toLowerCase()), false);
+                argumentListBuilder.addKeyValuePair("--", "link", link.toLowerCase(), false);
             }
         }
         return this;
@@ -95,7 +95,7 @@ public class RunCommandArgumentBuilder extends ImageArgumentBuilder<RunCommandAr
     public final RunCommandArgumentBuilder expose(String... exposedPorts) {
         if(isNotEmpty(exposedPorts)) {
             for(String environmentVariable : exposedPorts) {
-                argumentListBuilder.addKeyValuePair("--", "expose", wrapInQuotes(environmentVariable), false);
+                argumentListBuilder.addKeyValuePair("--", "expose", environmentVariable, false);
             }
         }
         return this;
@@ -112,14 +112,14 @@ public class RunCommandArgumentBuilder extends ImageArgumentBuilder<RunCommandAr
 
     public final RunCommandArgumentBuilder workingDirectory(String workingDirectory) {
         if(isNotEmpty(workingDirectory)) {
-            argumentListBuilder.addKeyValuePair("--", "workdir", wrapInQuotes(workingDirectory), false);
+            argumentListBuilder.addKeyValuePair("--", "workdir", workingDirectory, false);
         }
         return this;
     }
 
     public final RunCommandArgumentBuilder volumeDriver(String volumeDriver) {
         if(isNotEmpty(volumeDriver)) {
-            argumentListBuilder.addKeyValuePair("--", "volume-driver", wrapInQuotes(volumeDriver), false);
+            argumentListBuilder.addKeyValuePair("--", "volume-driver", volumeDriver, false);
         }
         return this;
     }

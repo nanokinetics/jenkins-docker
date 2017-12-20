@@ -15,10 +15,6 @@ public class ArgumentBuilder {
         argumentListBuilder.addTokenized(((BuildImageBuildStepDescriptor) Jenkins.getInstance().getDescriptor(BuildImageBuildStep.class)).getDockerBinary() + " " + command);
     }
 
-    protected final String wrapInQuotes(Object value) {
-        return "\"" + value + "\"";
-    }
-
     protected final String stripWhitespace(String value) {
         if(isNotEmpty(value)) {
             return value.replaceAll("\\s", "");
